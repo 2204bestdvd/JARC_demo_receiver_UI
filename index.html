@@ -1,0 +1,70 @@
+<!doctype html>
+<html>
+  <head>
+    <title>JARC Receiver</title>
+    <style>
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      body { font: 13px Helvetica, Arial; }
+      form { background: #000; padding: 3px; position: fixed; bottom: 0; width: 100%; }
+      form input { border: 0; padding: 10px; width: 90%; margin-right: .5%; }
+      form button { width: 9%; background: rgb(130, 224, 255); border: none; padding: 10px; }
+      #filelist { list-style-type: none; margin-left: 10%; padding: 0; }
+      #load-config { background: #fff; padding: 3px; position: fixed; bottom: 40px; width: 100%; }
+
+      .thumb {
+        height: 75px;
+        border: 1px solid #000;
+        margin: 10px 5px 0 0;
+      }      
+
+      /* Box styles */
+      .log-box {
+        border: none;
+        padding: 5px;
+        font: 24px/36px sans-serif;
+        width: 70%;
+        height: 200px;
+        overflow: scroll;
+      }
+
+    </style>
+
+    <!-- Plotly.js -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+
+  </head>
+  <body>
+
+    <div class="log-box" id="console">
+    </div>
+
+    <output id="list"></output>
+
+
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+
+    <script>
+      const socket = io();
+      $(function () {
+        socket.on('log', function(msg){
+            $('#console').append(msg).append($('<br>'));
+            $('#console').scrollTop($('#console')[0].scrollHeight);
+        });      
+        socket.on('buffer', function(msg) {
+          console.log(msg);
+        });
+
+        socket.on('image', function(url){
+          url = 'http://127.0.0.1:8080/' + url;
+          console.log(url);
+          var span = document.createElement('span');
+          span.innerHTML = ['<img src="', url, '"/>'].join('');
+          document.getElementById('list').insertBefore(span, null);
+        });
+      });
+    </script>
+
+  </body>
+</html>
